@@ -1,0 +1,60 @@
+version: '3.7'
+services:
+  pdns-db:
+    image: mariadb:latest
+    container_name: pdns-db
+    restart: unless-stopped
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - pdns-database:/var/lib/mysql:Z
+    environment:
+      - MARIADB_ROOT_PASSWORD=0123456789
+      - MARIADB_AUTO_UPGRADE=True
+      - MARIADB_USER=powerdns
+      - MARIADB_PASSWORD=powerdns
+      - MARIADB_DATABASE=powerdns
+    healthcheck:
+      test: ['CMD', 'mariadb-admin', 'ping', '-h', 'localhost']
+      timeout: 10s
+      retries: 5
+
+  pdns:
+    # image: cyrius44/pdns:latest
+    build: .
+    restart: unless-stopped
+    hostname: ns1.ipocus.net
+    environment:
+      - PDNS_LAUNCH=gmysql
+      - PDNS_GMYSQL_HOST=pdns-db
+      - PDNS_GMYSQL_DBNAME=powerdns
+      - PDNS_GMYSQL_USER=powerdns
+      - PDNS_GMYSQL_PASSWORD=powerdns
+      - PDNS_GMYSQL_DNSSEC=yes      
+      - PDNS_API=yes
+      - PDNS_API_KEY=0012345678900
+      - PDNS_WEBSERVER=yes
+      - PDNS_WEBSERVER_PORT=8081
+      - PDNS_WEBSERVER_ADDRESS=0.0.0.0
+      - PDNS_WEBSERVER_ALLOW_FROM=127.0.0.1,127.0.0.0/8,::1,172.16.0.0/12,192.168.0.0/16
+      - PDNS_LOCAL_ADDRESS=0.0.0.0:53, [::]:53
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - pdns-db
+
+  pdns-admin:
+    image: powerdnsadmin/pda-legacy:latest
+    restart: unless-stopped
+    depends_on:
+      - pdns-db      
+    environment:
+      - SQLALCHEMY_DATABASE_URI=mysql://powerdns:powerdns@pdns-db/powerdns
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - pdns-data:/data
+    ports:
+      - 80:80/tcp
+
+volumes:
+  pdns-database:
+  pdns-data:
