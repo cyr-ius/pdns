@@ -1,6 +1,6 @@
-FROM alpine:3.19
+FROM alpine:3.22
 LABEL Name=pdns
-LABEL Version=4.8.3
+LABEL Version=4.9.5
 LABEL Maintainer=Cyr-ius
 RUN apk add --no-cache pdns pdns-backend-sqlite3 pdns-backend-mariadb pdns-backend-geoip pdns-backend-mysql mariadb-client mysql-client pdns-doc python3 py3-pip
 RUN pip3 install --break-system-packages --no-cache-dir envtpl
