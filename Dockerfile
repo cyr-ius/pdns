@@ -1,6 +1,6 @@
 FROM alpine:3.23
 LABEL Name=pdns
-LABEL Version=4.9.5
+LABEL Version=5.0-rc01
 LABEL Maintainer=Cyr-ius
 RUN apk add --no-cache pdns pdns-backend-sqlite3 pdns-backend-mariadb pdns-backend-geoip pdns-backend-mysql mariadb-client mysql-client pdns-doc python3 py3-pip
 RUN pip3 install --break-system-packages --no-cache-dir envtpl
@@ -19,4 +19,5 @@ EXPOSE 53 53/tcp
 EXPOSE 5353 5353/UDP
 ENTRYPOINT [ "/docker-entrypoint.sh" ]
 CMD [ "/usr/sbin/pdns_server" ]
+
 
