@@ -1,4 +1,4 @@
-FROM alpine:3.22
+FROM alpine:3.23
 LABEL Name=pdns
 LABEL Version=4.9.5
 LABEL Maintainer=Cyr-ius
@@ -19,3 +19,4 @@ EXPOSE 53 53/tcp
 EXPOSE 5353 5353/UDP
 ENTRYPOINT [ "/docker-entrypoint.sh" ]
 CMD [ "/usr/sbin/pdns_server" ]
+
